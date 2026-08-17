@@ -1,0 +1,85 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+model Category {
+  id         String    @id @default(uuid())
+  name       String    @unique
+  banglaName String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  products   Product[]
+}
+
+model Product {
+  id          String         @id @default(uuid())
+  name        String
+  banglaName  String?
+  categoryId  String
+  category    Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  defaultUnit String?        // e.g., "kg", "liter", "piece"
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  aliases     ProductAlias[]
+  items       ShoppingItem[]
+}
+
+model ProductAlias {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  alias     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Market {
+  id        String            @id @default(uuid())
+  name      String            @unique
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  sessions  ShoppingSession[]
+}
+
+model ShoppingSession {
+  id        String         @id @default(uuid())
+  date      DateTime
+  marketId  String?
+  market    Market?        @relation(fields: [marketId], references: [id], onDelete: SetNull)
+  notes     String?
+  total     Float          @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  items     ShoppingItem[]
+}
+
+model ShoppingItem {
+  id         String          @id @default(uuid())
+  sessionId  String
+  session    ShoppingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  productId  String
+  product    Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity   Float
+  unit       String
+  unitPrice  Float
+  totalPrice Float
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  month     Int      // 1 to 12
+  year      Int      // e.g., 2026
+  amount    Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([month, year])
+}
