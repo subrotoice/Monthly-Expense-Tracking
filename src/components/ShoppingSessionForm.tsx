@@ -449,7 +449,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
         )}
       </div>
 
-      {/* Date & Market Settings */}
+      {/* Date Settings */}
       <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-2xs space-y-3">
         {/* Date picker */}
         <div className="flex flex-col space-y-1">
@@ -458,52 +458,8 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600"
+            className="w-full border border-gray-200 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
           />
-        </div>
-
-        {/* Market Select */}
-        <div className="flex flex-col space-y-1">
-          <div className="flex justify-between items-center">
-            <label className="text-2xs font-bold text-gray-400 uppercase tracking-wider">Bazar / Shop</label>
-            <button
-              onClick={() => setShowAddMarket(!showAddMarket)}
-              className="text-3xs font-semibold text-green-600 flex items-center hover:underline"
-            >
-              <Plus className="w-2.5 h-2.5 mr-0.5" /> New Market
-            </button>
-          </div>
-
-          {showAddMarket ? (
-            <div className="flex space-x-2 mt-1">
-              <input
-                type="text"
-                value={newMarketName}
-                onChange={(e) => setNewMarketName(e.target.value)}
-                placeholder="Market Name (e.g. Karwan Bazar)"
-                className="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-xs focus:outline-none focus:border-green-600"
-              />
-              <button
-                onClick={handleCreateMarket}
-                className="bg-green-600 text-white rounded-lg px-3 text-xs font-semibold hover:bg-green-700 transition-colors"
-              >
-                Create
-              </button>
-            </div>
-          ) : (
-            <select
-              value={marketId}
-              onChange={(e) => setMarketId(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600 bg-white"
-            >
-              <option value="">Select Market</option>
-              {markets.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
       </div>
 
@@ -532,7 +488,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
 
         {/* Product Autocomplete Search */}
         <div className="relative">
-          <div className="flex items-center border border-gray-200 rounded-lg px-3 py-2 bg-gray-50/50 focus-within:border-green-600">
+          <div className="flex items-center border border-gray-200 bg-white rounded-lg px-3 py-2 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-500/20 transition-all">
             <Search className="w-4 h-4 text-gray-400 mr-2" />
             <input
               type="text"
@@ -542,7 +498,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 setSearchQuery(e.target.value);
                 if (!e.target.value) setSelectedProduct(null);
               }}
-              className="flex-1 bg-transparent text-sm focus:outline-none"
+              className="flex-1 bg-transparent text-sm focus:outline-none text-gray-900 placeholder-gray-400 font-semibold"
             />
           </div>
 
@@ -596,21 +552,21 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 placeholder="English Name"
                 value={newProdName}
                 onChange={(e) => setNewProdName(e.target.value)}
-                className="border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
               />
               <input
                 type="text"
                 placeholder="Bangla Name (Optional)"
                 value={newProdBangla}
                 onChange={(e) => setNewProdBangla(e.target.value)}
-                className="border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={newProdCatId}
                 onChange={(e) => setNewProdCatId(e.target.value)}
-                className="border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-200 bg-white text-gray-900 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium bg-white"
               >
                 <option value="">Category</option>
                 {categories.map((c) => (
@@ -622,7 +578,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
               <select
                 value={newProdUnit}
                 onChange={(e) => setNewProdUnit(e.target.value)}
-                className="border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-200 bg-white text-gray-900 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium bg-white"
               >
                 <option value="kg">kg</option>
                 <option value="gram">gram</option>
@@ -638,18 +594,18 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
               placeholder="Search Aliases (comma separated, e.g. alu, aloo)"
               value={newProdAliases}
               onChange={(e) => setNewProdAliases(e.target.value)}
-              className="w-full border border-gray-200 bg-white rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+              className="w-full border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
             />
             <div className="flex justify-end space-x-2 pt-1">
               <button
                 onClick={() => setShowAddProduct(false)}
-                className="text-2xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-100"
+                className="text-2xs font-semibold text-gray-500 bg-white border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-100 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleCreateProduct}
-                className="text-2xs font-semibold text-white bg-green-600 rounded-lg px-3.5 py-1.5 hover:bg-green-700"
+                className="text-2xs font-semibold text-white bg-green-600 rounded-lg px-3.5 py-1.5 hover:bg-green-700 transition-colors"
               >
                 Create & Select
               </button>
@@ -680,12 +636,12 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="e.g. 5"
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600"
+                    className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
                   />
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="border border-gray-200 rounded-lg px-2 text-xs focus:outline-none bg-white font-medium"
+                    className="border border-gray-200 text-gray-900 bg-white rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-bold"
                   >
                     <option value="kg">kg</option>
                     <option value="gram">g</option>
@@ -707,7 +663,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                   value={unitPrice}
                   onChange={(e) => setUnitPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="e.g. 70"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600"
+                  className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
                 />
               </div>
             </div>
@@ -720,7 +676,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                   value={totalPrice}
                   onChange={(e) => handleTotalPriceChange(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="e.g. 350"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600"
+                  className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
                 />
               </div>
 
@@ -804,7 +760,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any notes about the bazaar session (e.g. got discount, high inflation)..."
           rows={2}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600 resize-none"
+          className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all resize-none font-medium"
         />
       </div>
 
