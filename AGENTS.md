@@ -39,3 +39,41 @@ This document outlines the core architecture and development progress of **Bazar
 * Products are search-matched client-side using `src/lib/searchHelper.ts`.
 * The search query is matched against the product's English name, Bangla name, and custom search aliases (e.g. typing `pey`, `piaz`, or `onion` returns `পেঁয়াজ`).
 * In-memory search allows instant partial matches while remaining fully functional offline.
+
+---
+
+## 4. Short Project Structure
+
+```text
+├── prisma/
+│   ├── schema.prisma   # PostgreSQL Models
+│   └── seed.ts         # Default categories, products, aliases
+├── src/
+│   ├── app/
+│   │   ├── page.tsx          # Dashboard
+│   │   ├── budget/page.tsx   # Budget settings
+│   │   ├── history/page.tsx  # Logs & filters
+│   │   ├── market/           # Add/edit sessions (/new, /[id])
+│   │   ├── products/         # Master products (/page.tsx, /[id])
+│   │   ├── reports/page.tsx  # Stats breakdown
+│   │   └── settings/page.tsx # JSON/CSV export & backup
+│   ├── components/     # Reusable UI (Header, Navigation, Form)
+│   ├── db/
+│   │   ├── localDb.ts      # IndexedDB / Dexie.js Schema
+│   │   └── syncManager.ts  # Push/pull client sync logic
+│   └── lib/
+│       ├── prisma.ts       # Prisma Pg Adapter instance
+│       └── searchHelper.ts # Bangla/English/Banglish fuzzy search
+```
+
+---
+
+## 5. Database Schema Summary (UUIDs)
+
+* **`Category`**: Groceries categories (`id`, `name`, `banglaName`)
+* **`Product`**: Items dictionary (`id`, `name`, `banglaName`, `categoryId`, `defaultUnit`)
+* **`ProductAlias`**: Synonyms for search (`id`, `productId`, `alias` [unique])
+* **`Market`**: Bazaar names (`id`, `name`)
+* **`ShoppingSession`**: Single market trip summary (`id`, `date`, `marketId`, `notes`, `total`)
+* **`ShoppingItem`**: Items inside a session (`id`, `sessionId`, `productId`, `quantity`, `unit`, `unitPrice`, `totalPrice`)
+* **`Budget`**: Monthly planning limits (`id`, `month`, `year`, `amount` [unique month+year])

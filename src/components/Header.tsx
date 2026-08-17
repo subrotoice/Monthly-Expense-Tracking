@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Cloud, CloudLightning, CloudOff, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useSync } from '@/hooks/useSync';
 
@@ -9,15 +10,15 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white border-b border-gray-100 px-4 py-3 flex items-center justify-between shadow-xs">
-      <div className="flex items-center space-x-2">
+      <Link href="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
         <div className="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center text-white font-bold text-lg">
           ৳
         </div>
         <div>
-          <h1 className="text-lg font-bold text-gray-900 tracking-tight leading-none">BazarHisab</h1>
+          <h1 className="text-lg font-bold text-gray-950 tracking-tight leading-none">BazarHisab</h1>
           <span className="text-2xs text-gray-500">Household Expense Tracker</span>
         </div>
-      </div>
+      </Link>
 
       <button
         onClick={triggerSync}

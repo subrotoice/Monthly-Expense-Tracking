@@ -107,14 +107,14 @@ export default function HistoryPage() {
 
       {/* Search and Filter Trigger */}
       <div className="flex space-x-2">
-        <div className="flex-1 flex items-center border border-gray-200 bg-white rounded-xl px-3 py-2 focus-within:border-green-600 shadow-2xs">
+        <div className="flex-1 flex items-center border border-gray-300 bg-white rounded-xl px-3.5 py-2.5 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-600/10 transition-all shadow-2xs">
           <Search className="w-4.5 h-4.5 text-gray-400 mr-2" />
           <input
             type="text"
             placeholder="Search notes or market..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent text-sm focus:outline-none"
+            className="w-full bg-transparent text-sm text-black placeholder-gray-400 font-semibold focus:outline-none"
           />
           {searchQuery && (
             <button onClick={() => setSearchQuery('')} className="p-0.5 text-gray-400 hover:text-gray-600">
@@ -152,7 +152,7 @@ export default function HistoryPage() {
               <select
                 value={selectedMarketId}
                 onChange={(e) => setSelectedMarketId(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-white focus:outline-none"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-xs text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
               >
                 <option value="">All Markets</option>
                 {markets.map((m) => (
@@ -169,7 +169,7 @@ export default function HistoryPage() {
               <select
                 value={selectedCategoryId}
                 onChange={(e) => setSelectedCategoryId(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs bg-white focus:outline-none"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-xs text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
               >
                 <option value="">All Categories</option>
                 {categories.map((c) => (
@@ -189,7 +189,7 @@ export default function HistoryPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-xs text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
               />
             </div>
 
@@ -200,7 +200,7 @@ export default function HistoryPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-xs text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
               />
             </div>
           </div>

@@ -77,14 +77,14 @@ export default function ProductsPage() {
       </div>
 
       {/* Search Input */}
-      <div className="flex items-center border border-gray-200 bg-white rounded-xl px-3 py-2 focus-within:border-green-600 shadow-2xs">
+      <div className="flex items-center border border-gray-300 bg-white rounded-xl px-3.5 py-2.5 focus-within:border-green-600 focus-within:ring-2 focus-within:ring-green-600/10 transition-all shadow-2xs">
         <Search className="w-4.5 h-4.5 text-gray-400 mr-2" />
         <input
           type="text"
           placeholder="Search products (e.g. Rice, পেঁয়াজ, alu)..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-transparent text-sm focus:outline-none"
+          className="w-full bg-transparent text-sm text-black placeholder-gray-400 font-semibold focus:outline-none"
         />
         {searchQuery && (
           <button onClick={() => setSearchQuery('')} className="p-0.5 text-gray-400 hover:text-gray-600">

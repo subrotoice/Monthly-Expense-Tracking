@@ -125,7 +125,7 @@ export default function BudgetPage() {
             <select
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600 bg-white"
+              className="w-full border border-gray-300 text-black rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold bg-white shadow-2xs"
             >
               {monthNames.map((name, index) => (
                 <option key={name} value={index + 1}>
@@ -140,7 +140,7 @@ export default function BudgetPage() {
             <select
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600 bg-white"
+              className="w-full border border-gray-300 text-black rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold bg-white shadow-2xs"
             >
               {[2025, 2026, 2027, 2028].map((y) => (
                 <option key={y} value={y}>
@@ -159,7 +159,7 @@ export default function BudgetPage() {
             value={amount}
             onChange={(e) => setAmount(e.target.value === '' ? '' : Number(e.target.value))}
             placeholder="e.g. 20000"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-green-600"
+            className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
           />
         </div>
 

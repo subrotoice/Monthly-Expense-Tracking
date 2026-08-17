@@ -458,7 +458,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
             type="date"
             value={date}
             onChange={(e) => setDate(e.target.value)}
-            className="w-full border border-gray-200 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
+            className="w-full border border-gray-300 text-black bg-white focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium shadow-2xs"
           />
         </div>
       </div>
@@ -498,7 +498,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 setSearchQuery(e.target.value);
                 if (!e.target.value) setSelectedProduct(null);
               }}
-              className="flex-1 bg-transparent text-sm focus:outline-none text-gray-900 placeholder-gray-400 font-semibold"
+              className="flex-1 bg-transparent text-sm focus:outline-none text-black placeholder-gray-400 font-semibold"
             />
           </div>
 
@@ -552,21 +552,21 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 placeholder="English Name"
                 value={newProdName}
                 onChange={(e) => setNewProdName(e.target.value)}
-                className="border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
+                className="border border-gray-300 bg-white text-black placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium shadow-2xs"
               />
               <input
                 type="text"
                 placeholder="Bangla Name (Optional)"
                 value={newProdBangla}
                 onChange={(e) => setNewProdBangla(e.target.value)}
-                className="border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
+                className="border border-gray-300 bg-white text-black placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium shadow-2xs"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <select
                 value={newProdCatId}
                 onChange={(e) => setNewProdCatId(e.target.value)}
-                className="border border-gray-200 bg-white text-gray-900 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium bg-white"
+                className="border border-gray-300 bg-white text-black rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium bg-white shadow-2xs"
               >
                 <option value="">Category</option>
                 {categories.map((c) => (
@@ -578,7 +578,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
               <select
                 value={newProdUnit}
                 onChange={(e) => setNewProdUnit(e.target.value)}
-                className="border border-gray-200 bg-white text-gray-900 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium bg-white"
+                className="border border-gray-300 bg-white text-black rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium bg-white shadow-2xs"
               >
                 <option value="kg">kg</option>
                 <option value="gram">gram</option>
@@ -594,7 +594,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
               placeholder="Search Aliases (comma separated, e.g. alu, aloo)"
               value={newProdAliases}
               onChange={(e) => setNewProdAliases(e.target.value)}
-              className="w-full border border-gray-200 bg-white text-gray-900 placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-medium"
+              className="w-full border border-gray-300 bg-white text-black placeholder-gray-400 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-medium shadow-2xs"
             />
             <div className="flex justify-end space-x-2 pt-1">
               <button
@@ -636,12 +636,12 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                     value={quantity}
                     onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="e.g. 5"
-                    className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
+                    className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
                   />
                   <select
                     value={unit}
                     onChange={(e) => setUnit(e.target.value)}
-                    className="border border-gray-200 text-gray-900 bg-white rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-bold"
+                    className="border border-gray-300 text-black bg-white rounded-lg px-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-bold shadow-2xs"
                   >
                     <option value="kg">kg</option>
                     <option value="gram">g</option>
@@ -663,7 +663,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                   value={unitPrice}
                   onChange={(e) => setUnitPrice(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="e.g. 70"
-                  className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
+                  className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
                 />
               </div>
             </div>
@@ -676,7 +676,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                   value={totalPrice}
                   onChange={(e) => handleTotalPriceChange(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="e.g. 350"
-                  className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all font-semibold"
+                  className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
                 />
               </div>
 
@@ -760,7 +760,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Any notes about the bazaar session (e.g. got discount, high inflation)..."
           rows={2}
-          className="w-full border border-gray-200 text-gray-900 bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-600 transition-all resize-none font-medium"
+          className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all resize-none font-medium shadow-2xs"
         />
       </div>
 
