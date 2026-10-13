@@ -74,7 +74,14 @@ export class SyncManager {
       });
 
       if (!response.ok) {
-        throw new Error(`Server returned status: ${response.status}`);
+        let serverError = `Server returned status: ${response.status}`;
+        try {
+          const errBody = await response.json();
+          if (errBody?.error) serverError += ` — ${errBody.error}`;
+        } catch {
+          // response body wasn't JSON, ignore
+        }
+        throw new Error(serverError);
       }
 
       const syncResult = await response.json();
