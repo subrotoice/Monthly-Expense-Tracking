@@ -55,8 +55,11 @@ export default function Dashboard() {
 
     const budget = budgetRecord ? budgetRecord.amount : 20000; // Default budget if not set
 
-    // Recent 5 sessions
-    const recentSessions = sessions.slice(0, 5);
+    // Show only sessions from the current month in the dashboard list.
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const recentSessions = sessions.filter(
+      (session) => session.date >= startOfMonth && session.date < startOfNextMonth
+    );
 
     // Fetch markets for names
     const markets = await localDb.markets.toArray();
@@ -127,6 +130,7 @@ export default function Dashboard() {
   const remainingBudget = budget - monthExpense;
   const budgetPercentage = budget > 0 ? Math.min(Math.round((monthExpense / budget) * 100), 100) : 0;
   const isOverBudget = remainingBudget < 0;
+  const currentMonthName = new Date().toLocaleDateString('en-US', { month: 'long' });
 
   return (
     <div className="space-y-5">
@@ -191,17 +195,17 @@ export default function Dashboard() {
         <div className="flex items-center justify-between">
           <h4 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
             <ShoppingBag className="w-4 h-4 text-green-600" />
-            Recent Bazar Sessions
+            {currentMonthName} Bazar Sessions
           </h4>
-          <Link href="/history" className="text-xs font-medium text-green-600 hover:underline flex items-center gap-0.5">
-            View All <ArrowRight className="w-3 h-3" />
+          <Link href="/history" className="text-xs font-semibold text-green-700 hover:text-green-800 flex items-center gap-1 rounded-lg border border-green-100 bg-green-50 px-2.5 py-1.5 transition-colors">
+            Older sessions <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {recentSessions.length === 0 ? (
           <div className="bg-white border border-dashed border-gray-200 rounded-xl p-6 text-center">
             <Store className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-500 font-medium">No shopping sessions recorded yet.</p>
+            <p className="text-xs text-gray-500 font-medium">No bazaar sessions this month yet.</p>
             <Link
               href="/market/new"
               className="text-xs font-semibold text-green-600 bg-green-50 hover:bg-green-100 px-3 py-1.5 rounded-lg transition-colors mt-3 inline-block"
@@ -257,7 +261,7 @@ export default function Dashboard() {
         <div className="space-y-3">
           <h4 className="text-sm font-bold text-gray-900 flex items-center gap-1.5">
             <TrendingUp className="w-4 h-4 text-green-600" />
-            Monthly Category Share
+            {currentMonthName} Category Expense
           </h4>
           <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-2xs space-y-3">
             {categoryBreakdown.map((item) => (

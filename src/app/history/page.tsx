@@ -14,10 +14,67 @@ export default function HistoryPage() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [showCategoryExpenses, setShowCategoryExpenses] = useState(false);
+  const [selectedExpenseMonth, setSelectedExpenseMonth] = useState('');
 
   // Fetch reference lists for filter dropdowns
   const markets = useLiveQuery(() => localDb.markets.where('deleted').equals(0).toArray()) || [];
   const categories = useLiveQuery(() => localDb.categories.where('deleted').equals(0).toArray()) || [];
+
+  const categoryExpenseMonths = useLiveQuery(async () => {
+    const [allSessions, items, products, allCategories] = await Promise.all([
+      localDb.shoppingSessions.where('deleted').equals(0).toArray(),
+      localDb.shoppingItems.where('deleted').equals(0).toArray(),
+      localDb.products.where('deleted').equals(0).toArray(),
+      localDb.categories.where('deleted').equals(0).toArray(),
+    ]);
+    const sessionsById = new Map(allSessions.map((session) => [session.id, session]));
+    const categoryByProductId = new Map(products.map((product) => [product.id, product.categoryId]));
+    const categoryMap = new Map(allCategories.map((category) => [category.id, category]));
+    const monthMap = new Map<string, { label: string; total: number; categoryTotals: Map<string, number> }>();
+
+    for (const session of allSessions) {
+      const date = new Date(session.date);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      let month = monthMap.get(key);
+      if (!month) {
+        month = {
+          label: date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
+          total: 0,
+          categoryTotals: new Map(),
+        };
+        monthMap.set(key, month);
+      }
+      month.total += session.total;
+    }
+
+    for (const item of items) {
+      const session = sessionsById.get(item.sessionId);
+      if (!session) continue;
+      const date = new Date(session.date);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      const month = monthMap.get(key);
+      if (!month) continue;
+      const categoryId = categoryByProductId.get(item.productId) || 'other';
+      month.categoryTotals.set(categoryId, (month.categoryTotals.get(categoryId) || 0) + item.totalPrice);
+    }
+
+    return Array.from(monthMap.entries())
+      .sort(([a], [b]) => b.localeCompare(a))
+      .map(([key, month]) => ({
+        key,
+        label: month.label,
+        total: month.total,
+        categories: Array.from(month.categoryTotals.entries())
+          .map(([categoryId, amount]) => ({
+            name: categoryMap.get(categoryId)?.name || 'Other',
+            banglaName: categoryMap.get(categoryId)?.banglaName || categoryMap.get(categoryId)?.name || 'অন্যান্য',
+            amount,
+            percentage: month.total > 0 ? Math.round((amount / month.total) * 100) : 0,
+          }))
+          .sort((a, b) => b.amount - a.amount),
+      }));
+  });
 
   // Fetch and filter sessions
   const data = useLiveQuery(async () => {
@@ -72,9 +129,38 @@ export default function HistoryPage() {
       sessions = sessions.filter(s => sessionIdsWithCat.has(s.id));
     }
 
+    // Fetch items for sessions to display quick item overview
+    const sessionIds = sessions.map(s => s.id);
+    const sessionItems = sessionIds.length > 0 
+      ? await localDb.shoppingItems
+          .where('sessionId')
+          .anyOf(sessionIds)
+          .and(item => item.deleted === 0)
+          .toArray()
+      : [];
+
+    const productIds = Array.from(new Set(sessionItems.map(item => item.productId)));
+    const products = productIds.length > 0
+      ? await localDb.products.where('id').anyOf(productIds).toArray()
+      : [];
+    const productNameMap = new Map(products.map(p => [p.id, p.name]));
+
+    const sessionItemsMap = new Map<string, string[]>();
+    for (const item of sessionItems) {
+      const prodName = productNameMap.get(item.productId);
+      if (prodName) {
+        const list = sessionItemsMap.get(item.sessionId) || [];
+        if (!list.includes(prodName)) {
+          list.push(prodName);
+        }
+        sessionItemsMap.set(item.sessionId, list);
+      }
+    }
+
     return {
       sessions,
       marketMap,
+      sessionItemsMap,
     };
   }, [searchQuery, selectedMarketId, selectedCategoryId, startDate, endDate, markets]);
 
@@ -86,6 +172,41 @@ export default function HistoryPage() {
     setEndDate('');
   };
 
+  const monthGroups = React.useMemo(() => {
+    if (!data?.sessions) return [];
+    
+    const groups: {
+      key: string;
+      label: string;
+      total: number;
+      sessionCount: number;
+      sessions: typeof data.sessions;
+    }[] = [];
+    const groupMap = new Map<string, typeof groups[0]>();
+
+    for (const session of data.sessions) {
+      const d = new Date(session.date);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      let group = groupMap.get(key);
+      if (!group) {
+        group = {
+          key,
+          label: d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' }),
+          total: 0,
+          sessionCount: 0,
+          sessions: [],
+        };
+        groupMap.set(key, group);
+        groups.push(group);
+      }
+      group.sessions.push(session);
+      group.total += session.total;
+      group.sessionCount += 1;
+    }
+
+    return groups;
+  }, [data?.sessions]);
+
   if (!data) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
@@ -95,15 +216,84 @@ export default function HistoryPage() {
     );
   }
 
-  const { sessions, marketMap } = data;
+  const { sessions, marketMap, sessionItemsMap } = data;
+  const selectedExpenseData = categoryExpenseMonths?.find((month) => month.key === selectedExpenseMonth)
+    || categoryExpenseMonths?.[0];
 
   return (
     <div className="space-y-4">
       {/* Title */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900">Bazar History</h2>
-        <p className="text-xs text-gray-500">Search and filter your past shopping sessions</p>
+      <div className="flex justify-between items-end">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Bazar History</h2>
+          <p className="text-xs text-gray-500">
+            {sessions.length} {sessions.length === 1 ? 'session' : 'sessions'} recorded
+          </p>
+        </div>
+        {sessions.length > 0 && (
+          <div className="text-right">
+            <span className="text-3xs font-semibold text-gray-400 uppercase tracking-wider block">Grand Total</span>
+            <span className="text-sm font-black text-gray-900">
+              ৳{sessions.reduce((sum, s) => sum + s.total, 0).toLocaleString()}
+            </span>
+          </div>
+        )}
       </div>
+
+      {showCategoryExpenses && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setShowCategoryExpenses(false)}>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="category-expense-title"
+            className="max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-gray-50 p-5 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h3 id="category-expense-title" className="text-base font-bold text-gray-900">Category Expenses</h3>
+                <p className="mt-1 text-xs text-gray-500">Choose a month to see its category breakdown.</p>
+              </div>
+              <button type="button" aria-label="Close" onClick={() => setShowCategoryExpenses(false)} className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-200">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {categoryExpenseMonths?.length ? (
+              <>
+                <label htmlFor="expense-month" className="mb-1.5 block text-xs font-semibold text-gray-600">Month</label>
+                <select
+                  id="expense-month"
+                  value={selectedExpenseData?.key || ''}
+                  onChange={(event) => setSelectedExpenseMonth(event.target.value)}
+                  className="mb-4 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-semibold text-gray-800"
+                >
+                  {categoryExpenseMonths.map((month) => <option key={month.key} value={month.key}>{month.label}</option>)}
+                </select>
+                {selectedExpenseData?.categories.length ? (
+                  <div className="space-y-3 rounded-xl border border-gray-100 bg-white p-4">
+                    <div className="mb-1 flex justify-between text-xs font-semibold text-gray-500">
+                      <span>{selectedExpenseData.label} total</span>
+                      <span className="text-gray-900">৳{selectedExpenseData.total.toLocaleString()}</span>
+                    </div>
+                    {selectedExpenseData.categories.map((category) => (
+                      <div key={category.name} className="space-y-1.5">
+                        <div className="flex justify-between gap-3 text-xs">
+                          <span className="font-semibold text-gray-700">{category.name} <span className="font-normal text-gray-400">({category.banglaName})</span></span>
+                          <span className="shrink-0 font-bold text-gray-900">৳{category.amount.toLocaleString()} ({category.percentage}%)</span>
+                        </div>
+                        <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                          <div className="h-full rounded-full bg-green-600" style={{ width: `${category.percentage}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : <p className="rounded-xl bg-white p-6 text-center text-sm text-gray-500">No category expenses recorded for this month.</p>}
+              </>
+            ) : <p className="rounded-xl bg-white p-6 text-center text-sm text-gray-500">No older month category expenses found.</p>}
+          </section>
+        </div>
+      )}
 
       {/* Search and Filter Trigger */}
       <div className="flex space-x-2">
@@ -213,8 +403,32 @@ export default function HistoryPage() {
           No matching shopping sessions found.
         </div>
       ) : (
-        <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-2xs divide-y divide-gray-100">
-          {sessions.map((session) => {
+        <div className="space-y-5">
+          {monthGroups.map((group) => (
+            <section key={group.key} aria-label={group.label}>
+              <div className="flex items-center justify-between border-b-2 border-green-100 px-1 pb-2">
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-sm font-extrabold text-gray-800">{group.label}</h3>
+                  <span className="text-3xs font-medium text-gray-400">
+                    {group.sessionCount} {group.sessionCount === 1 ? 'session' : 'sessions'}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-xs font-bold text-gray-600">৳{group.total.toLocaleString()}</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedExpenseMonth(group.key);
+                      setShowCategoryExpenses(true);
+                    }}
+                    className="cursor-pointer text-[10px] font-semibold text-green-700 hover:text-green-800 hover:underline"
+                  >
+                    Category expenses
+                  </button>
+                </div>
+              </div>
+              <div className="mt-2 overflow-hidden rounded-xl border border-gray-100 bg-white shadow-2xs divide-y divide-gray-100">
+                {group.sessions.map((session) => {
             const marketName = session.marketId
               ? (marketMap.get(session.marketId) || session.notes?.trim() || 'No Notes')
               : (session.notes?.trim() || 'No Notes');
@@ -247,7 +461,10 @@ export default function HistoryPage() {
                 </div>
               </Link>
             );
-          })}
+                })}
+              </div>
+            </section>
+          ))}
         </div>
       )}
     </div>
