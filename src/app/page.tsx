@@ -69,9 +69,11 @@ export default function Dashboard() {
 
     const products = await localDb.products.toArray();
     const prodToCatMap = new Map(products.map(p => [p.id, p.categoryId]));
+    const prodNameMap = new Map(products.map(p => [p.id, p.name]));
 
-    // Calculate category breakdown
+    // Calculate category breakdown and session items for quick view
     const categoryTotals: Record<string, number> = {};
+    const sessionItemsMap = new Map<string, string[]>();
     const items = await localDb.shoppingItems.where('deleted').equals(0).toArray();
 
     items.forEach((item) => {
@@ -82,6 +84,14 @@ export default function Dashboard() {
         if (catId) {
           categoryTotals[catId] = (categoryTotals[catId] || 0) + item.totalPrice;
         }
+      }
+
+      // Collect product name for session quick view
+      const pName = prodNameMap.get(item.productId);
+      if (pName) {
+        const list = sessionItemsMap.get(item.sessionId) || [];
+        list.push(pName);
+        sessionItemsMap.set(item.sessionId, list);
       }
     });
 
@@ -99,6 +109,7 @@ export default function Dashboard() {
       budget,
       recentSessions,
       marketMap,
+      sessionItemsMap,
       categoryBreakdown,
     };
   });
@@ -112,7 +123,7 @@ export default function Dashboard() {
     );
   }
 
-  const { todayExpense, weekExpense, monthExpense, budget, recentSessions, marketMap, categoryBreakdown } = data;
+  const { todayExpense, weekExpense, monthExpense, budget, recentSessions, marketMap, sessionItemsMap, categoryBreakdown } = data;
   const remainingBudget = budget - monthExpense;
   const budgetPercentage = budget > 0 ? Math.min(Math.round((monthExpense / budget) * 100), 100) : 0;
   const isOverBudget = remainingBudget < 0;
@@ -204,21 +215,33 @@ export default function Dashboard() {
               const marketName = session.marketId
                 ? marketMap.get(session.marketId)
                 : (session.notes?.trim() || 'No Notes');
+              const itemsList = sessionItemsMap.get(session.id) || [];
+              const itemsSummary = itemsList.join(', ');
+
               return (
                 <Link
                   key={session.id}
                   href={`/market/${session.id}`}
-                  className={`flex justify-between items-center px-4 py-3.5 hover:bg-gray-50/50 transition-colors ${
+                  className={`flex justify-between items-center px-4 py-3.5 hover:bg-gray-50/50 transition-colors gap-3 ${
                     index < recentSessions.length - 1 ? 'border-b border-gray-100' : ''
                   }`}
                 >
-                  <div className="space-y-0.5">
+                  <div className="space-y-0.5 shrink-0">
                     <span className="text-sm font-bold text-gray-800 block leading-tight">
                       {new Date(session.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
                     <span className="text-gray-400 block" style={{ fontSize: '11px' }}>{marketName}</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+
+                  {itemsSummary && (
+                    <div className="flex-1 min-w-0 px-2 text-left" title={itemsSummary}>
+                      <span className="text-xs text-gray-500 font-medium line-clamp-2 leading-snug block">
+                        {itemsSummary}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center space-x-2 shrink-0">
                     <span className="text-sm font-extrabold text-gray-900">৳{session.total.toLocaleString()}</span>
                     <ArrowRight className="w-4 h-4 text-gray-400" />
                   </div>
