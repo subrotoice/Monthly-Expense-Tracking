@@ -2,10 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { localDb, type LocalShoppingSession, type LocalShoppingItem, type LocalProduct, type LocalMarket, type LocalCategory } from '@/db/localDb';
 import { searchProducts, type SearchResultProduct } from '@/lib/searchHelper';
-import { ArrowLeft, Plus, Trash2, Edit2, Search, Check, AlertCircle, Save } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Edit2, Search, Check, AlertCircle, Save, ExternalLink } from 'lucide-react';
 import { useSync } from '@/hooks/useSync';
 
 interface ShoppingSessionFormProps {
@@ -746,15 +747,25 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
             {itemsList.map((item, index) => {
               // Find matching product name in local state/database
               const matchingProd = products.find(p => p.id === item.productId);
+
               return (
-                <div key={item.id} className="flex justify-between items-center p-4">
+                <div key={item.id} className="flex justify-between items-center p-4 hover:bg-gray-50/50 transition-colors">
                   <div className="space-y-1">
-                    <span className="text-sm font-bold text-gray-800 block">
-                      {matchingProd?.name || 'Product'}{' '}
-                      {matchingProd?.banglaName && (
-                        <span className="text-gray-400 font-normal">({matchingProd.banglaName})</span>
-                      )}
-                    </span>
+                    <Link
+                      href={`/products/${item.productId}`}
+                      title="View product item page"
+                      className="text-sm font-bold text-gray-800 hover:text-green-600 transition-colors inline-flex items-center gap-1 group"
+                    >
+                      <span>
+                        {matchingProd?.name || 'Product'}
+                        {matchingProd?.banglaName && (
+                          <span className="text-gray-400 font-normal group-hover:text-green-500 ml-1">
+                            ({matchingProd.banglaName})
+                          </span>
+                        )}
+                      </span>
+                      <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-green-600 transition-colors" />
+                    </Link>
                     <span className="text-3xs text-gray-500 block">
                       {item.quantity} {item.unit} × ৳{item.unitPrice}
                     </span>
