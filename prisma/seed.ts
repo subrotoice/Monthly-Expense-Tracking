@@ -17,7 +17,14 @@ async function main() {
       banglaName: 'মুদি বাজার',
       products: [
         { name: 'Rice', banglaName: 'চাল', defaultUnit: 'kg', aliases: ['chal', 'chaal', 'rice'] },
-        { name: 'Lentils', banglaName: 'ডাল', defaultUnit: 'kg', aliases: ['dal', 'daal', 'lentils', 'masur dal', 'mushur dal'] },
+        { name: 'Lentils', banglaName: 'ডাল', defaultUnit: 'kg', aliases: ['dal', 'daal', 'lentils'] },
+        { name: 'Masoor Dal', banglaName: 'মসুর ডাল', defaultUnit: 'kg', aliases: ['masoor dal', 'mushur dal', 'masur dal', 'mosur dal', 'red lentils'] },
+        { name: 'Moong Dal', banglaName: 'মুগ ডাল', defaultUnit: 'kg', aliases: ['mug dal', 'moong dal', 'mung dal', 'yellow lentils'] },
+        { name: 'Chana Dal', banglaName: 'ছোলার ডাল / বুটের ডাল', defaultUnit: 'kg', aliases: ['chola dal', 'cholar dal', 'booter dal', 'buter dal', 'chana dal', 'split chickpeas'] },
+        { name: 'Khesari Dal', banglaName: 'খেসারি ডাল', defaultUnit: 'kg', aliases: ['khesari dal', 'khesari', 'kesari dal'] },
+        { name: 'Mashkalai Dal', banglaName: 'মাষকলাই ডাল', defaultUnit: 'kg', aliases: ['mashkalai dal', 'maskalai dal', 'kalai dal', 'urad dal', 'mashkalai'] },
+        { name: 'Motor Dal', banglaName: 'মটর ডাল', defaultUnit: 'kg', aliases: ['motor dal', 'matar dal', 'mator dal', 'pea lentils'] },
+        { name: 'Arhar Dal', banglaName: 'অড়হর ডাল', defaultUnit: 'kg', aliases: ['arhar dal', 'orhor dal', 'toor dal', 'pigeon pea'] },
         { name: 'Flour', banglaName: 'ময়দা', defaultUnit: 'kg', aliases: ['atta', 'maida', 'flour', 'moida'] },
         { name: 'Oil', banglaName: 'তেল', defaultUnit: 'liter', aliases: ['tel', 'oil', 'soyabean oil', 'sorishar tel'] },
         { name: 'Salt', banglaName: 'লবণ', defaultUnit: 'kg', aliases: ['laban', 'lobon', 'salt'] },
@@ -75,6 +82,7 @@ async function main() {
       name: 'Fruits',
       banglaName: 'ফল',
       products: [
+        { name: 'Fruit', banglaName: 'ফল', defaultUnit: 'kg', aliases: ['fol', 'fruit', 'fruits'] },
         { name: 'Banana', banglaName: 'কলা', defaultUnit: 'dozen', aliases: ['kola', 'banana'] },
         { name: 'Apple', banglaName: 'আপেল', defaultUnit: 'kg', aliases: ['apul', 'apple'] },
         { name: 'Orange', banglaName: 'কমলা', defaultUnit: 'kg', aliases: ['komola', 'orange', 'malta'] },
@@ -86,6 +94,7 @@ async function main() {
       name: 'Fish',
       banglaName: 'মাছ',
       products: [
+        { name: 'Fish', banglaName: 'মাছ', defaultUnit: 'kg', aliases: ['mach', 'fish', 'maach'] },
         { name: 'Rui', banglaName: 'রুই', defaultUnit: 'kg', aliases: ['rui mach', 'ruhi', 'rui'] },
         { name: 'Katla', banglaName: 'কাতলা', defaultUnit: 'kg', aliases: ['katla mach', 'katla'] },
         { name: 'Hilsa', banglaName: 'ইলিশ', defaultUnit: 'piece', aliases: ['ilish', 'ilisha', 'hilsa'] },
@@ -99,6 +108,7 @@ async function main() {
       name: 'Meat',
       banglaName: 'মাংস',
       products: [
+        { name: 'Meat', banglaName: 'মাংস', defaultUnit: 'kg', aliases: ['mangsho', 'meat', 'mangso'] },
         { name: 'Chicken', banglaName: 'মুরগি', defaultUnit: 'kg', aliases: ['murgi', 'chicken', 'broiler'] },
         { name: 'Beef', banglaName: 'গরুর মাংস', defaultUnit: 'kg', aliases: ['goru', 'gorur mangso', 'beef'] },
         { name: 'Mutton', banglaName: 'খাসির মাংস', defaultUnit: 'kg', aliases: ['khashi', 'khashir mangso', 'mutton'] },
