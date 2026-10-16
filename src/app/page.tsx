@@ -201,7 +201,9 @@ export default function Dashboard() {
         ) : (
           <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-2xs">
             {recentSessions.map((session, index) => {
-              const marketName = session.marketId ? marketMap.get(session.marketId) : 'Unknown Bazar';
+              const marketName = session.marketId
+                ? marketMap.get(session.marketId)
+                : (session.notes?.trim() || 'No Notes');
               return (
                 <Link
                   key={session.id}
@@ -210,11 +212,11 @@ export default function Dashboard() {
                     index < recentSessions.length - 1 ? 'border-b border-gray-100' : ''
                   }`}
                 >
-                  <div className="space-y-1">
-                    <span className="text-sm font-bold text-gray-800 block leading-tight">{marketName}</span>
-                    <span className="text-3xs text-gray-500 block">
+                  <div className="space-y-0.5">
+                    <span className="text-sm font-bold text-gray-800 block leading-tight">
                       {new Date(session.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </span>
+                    <span className="text-gray-400 block" style={{ fontSize: '11px' }}>{marketName}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-extrabold text-gray-900">৳{session.total.toLocaleString()}</span>

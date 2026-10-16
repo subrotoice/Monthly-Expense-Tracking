@@ -215,7 +215,9 @@ export default function HistoryPage() {
       ) : (
         <div className="bg-white border border-gray-100 rounded-xl overflow-hidden shadow-2xs divide-y divide-gray-100">
           {sessions.map((session) => {
-            const marketName = session.marketId ? marketMap.get(session.marketId) : 'Unknown Bazar';
+            const marketName = session.marketId
+              ? (marketMap.get(session.marketId) || session.notes?.trim() || 'No Notes')
+              : (session.notes?.trim() || 'No Notes');
             return (
               <Link
                 key={session.id}

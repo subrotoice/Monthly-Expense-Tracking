@@ -18,12 +18,20 @@ async function main() {
       products: [
         { name: 'Rice', banglaName: 'চাল', defaultUnit: 'kg', aliases: ['chal', 'chaal', 'rice'] },
         { name: 'Lentils', banglaName: 'ডাল', defaultUnit: 'kg', aliases: ['dal', 'daal', 'lentils', 'masur dal', 'mushur dal'] },
-        { name: 'Flour', banglaName: 'আটা', defaultUnit: 'kg', aliases: ['atta', 'maida', 'flour', 'moida'] },
+        { name: 'Flour', banglaName: 'ময়দা', defaultUnit: 'kg', aliases: ['atta', 'maida', 'flour', 'moida'] },
         { name: 'Oil', banglaName: 'তেল', defaultUnit: 'liter', aliases: ['tel', 'oil', 'soyabean oil', 'sorishar tel'] },
         { name: 'Salt', banglaName: 'লবণ', defaultUnit: 'kg', aliases: ['laban', 'lobon', 'salt'] },
         { name: 'Sugar', banglaName: 'চিনি', defaultUnit: 'kg', aliases: ['chini', 'sugar'] },
-        { name: 'Spices', banglaName: 'মসলা', defaultUnit: 'gram', aliases: ['mosla', 'halud', 'moriच', 'jira', 'spices'] },
         { name: 'Tea', banglaName: 'চা', defaultUnit: 'packet', aliases: ['cha', 'tea', 'ispahani'] },
+        { name: 'Cumin', banglaName: 'জিরা', defaultUnit: 'gram', aliases: ['jira', 'jeera', 'cumin'] },
+        { name: 'Coriander Powder', banglaName: 'ধনিয়া', defaultUnit: 'gram', aliases: ['dhonia', 'dhoniya', 'coriander powder'] },
+        { name: 'Turmeric', banglaName: 'হলুদ', defaultUnit: 'gram', aliases: ['holud', 'halud', 'turmeric'] },
+        { name: 'Dry Chili', banglaName: 'শুকনা মরিচ', defaultUnit: 'gram', aliases: ['shukna morich', 'dry chili', 'red chili'] },
+        { name: 'Raisins', banglaName: 'কিসমিস', defaultUnit: 'gram', aliases: ['kismis', 'kishmish', 'raisins'] },
+        { name: 'Cashew', banglaName: 'কাজুবাদাম', defaultUnit: 'gram', aliases: ['kaju badam', 'cashew', 'kaju'] },
+        { name: 'Black Pepper', banglaName: 'গোলমরিচ', defaultUnit: 'gram', aliases: ['golmorich', 'black pepper', 'pepper'] },
+        { name: 'Garam Masala', banglaName: 'গরমমশলা', defaultUnit: 'gram', aliases: ['garam masala', 'gorom mosla'] },
+        { name: 'Bay Leaf', banglaName: 'তেজপাতা', defaultUnit: 'gram', aliases: ['tejpata', 'bay leaf', 'tezpata'] },
       ]
     },
     {
@@ -33,13 +41,34 @@ async function main() {
         { name: 'Potato', banglaName: 'আলু', defaultUnit: 'kg', aliases: ['alu', 'aloo', 'potato'] },
         { name: 'Onion', banglaName: 'পেঁয়াজ', defaultUnit: 'kg', aliases: ['peyaj', 'peyay', 'piaz', 'pyaj', 'onion'] },
         { name: 'Garlic', banglaName: 'রসুন', defaultUnit: 'kg', aliases: ['rasun', 'roshun', 'garlic'] },
-        { name: 'Ginger', banglaName: 'আদা', defaultUnit: 'kg', aliases: ['ada', 'ginger'] },
+        { name: 'Ginger', banglaName: 'আদা', defaultUnit: 'kg', aliases: ['ada', 'aada', 'ginger'] },
         { name: 'Tomato', banglaName: 'টমেটো', defaultUnit: 'kg', aliases: ['tomato', 'tomator'] },
         { name: 'Eggplant', banglaName: 'বেগুন', defaultUnit: 'kg', aliases: ['begun', 'eggplant', 'brinjal'] },
         { name: 'Green Chili', banglaName: 'কাঁচা মরিচ', defaultUnit: 'kg', aliases: ['morich', 'kacha morich', 'chili'] },
-        { name: 'Coriander', banglaName: 'ধনে পাতা', defaultUnit: 'gram', aliases: ['dhone pata', 'dhania', 'coriander'] },
+        { name: 'Coriander Leaves', banglaName: 'ধনে পাতা', defaultUnit: 'gram', aliases: ['dhone pata', 'dhania pata', 'coriander leaves'] },
         { name: 'Lemon', banglaName: 'লেবু', defaultUnit: 'piece', aliases: ['lebu', 'lemon'] },
         { name: 'Cucumber', banglaName: 'শসা', defaultUnit: 'kg', aliases: ['shosha', 'cucumber'] },
+        { name: 'Spinach', banglaName: 'শাক', defaultUnit: 'kg', aliases: ['shak', 'spinach', 'greens'] },
+        { name: 'Pumpkin', banglaName: 'কুমড়া', defaultUnit: 'kg', aliases: ['kumra', 'kumda', 'pumpkin'] },
+        { name: 'Beans', banglaName: 'সিম', defaultUnit: 'kg', aliases: ['shim', 'sim', 'beans'] },
+        { name: 'Taro', banglaName: 'মান', defaultUnit: 'kg', aliases: ['man kochu', 'taro'] },
+        { name: 'Elephant Yam', banglaName: 'ওল', defaultUnit: 'kg', aliases: ['ol', 'yam', 'elephant yam'] },
+        { name: 'Bhadal', banglaName: 'ভাদাল', defaultUnit: 'kg', aliases: ['bhadal', 'vadal'] },
+        { name: 'Banana Flower', banglaName: 'কলার মোচা', defaultUnit: 'piece', aliases: ['kolar mocha', 'banana flower', 'mocha'] },
+        { name: 'Wild Fig', banglaName: 'ডুমুর', defaultUnit: 'kg', aliases: ['dumur', 'fig', 'wild fig'] },
+        { name: 'Bitter Gourd Small', banglaName: 'উচ্ছে', defaultUnit: 'kg', aliases: ['uchche', 'bitter gourd small'] },
+        { name: 'Cabbage', banglaName: 'বাঁধাকপি', defaultUnit: 'piece', aliases: ['badha kopi', 'cabbage'] },
+        { name: 'Cauliflower', banglaName: 'ফুলকপি', defaultUnit: 'piece', aliases: ['ful kopi', 'cauliflower'] },
+        { name: 'Pointed Gourd', banglaName: 'পটল', defaultUnit: 'kg', aliases: ['potol', 'pointed gourd'] },
+        { name: 'Carrot', banglaName: 'গাজর', defaultUnit: 'kg', aliases: ['gajor', 'carrot'] },
+        { name: 'Green Banana', banglaName: 'কাঁচাকলা', defaultUnit: 'kg', aliases: ['kacha kola', 'green banana'] },
+        { name: 'Taro Stem', banglaName: 'কচুর লতি', defaultUnit: 'kg', aliases: ['kochor loti', 'taro stem'] },
+        { name: 'Taro Root', banglaName: 'কচুরমুখি', defaultUnit: 'kg', aliases: ['kochor mukhi', 'taro root'] },
+        { name: 'Okra', banglaName: 'ঢেঁড়স', defaultUnit: 'kg', aliases: ['dherosh', 'okra', 'lady finger'] },
+        { name: 'Long Beans', banglaName: 'বরবটি', defaultUnit: 'kg', aliases: ['barboti', 'long beans', 'yard beans'] },
+        { name: 'Spine Gourd', banglaName: 'কাকরোল', defaultUnit: 'kg', aliases: ['kakrol', 'spine gourd'] },
+        { name: 'Bitter Melon', banglaName: 'করলা', defaultUnit: 'kg', aliases: ['korola', 'bitter melon'] },
+        { name: 'Papaya', banglaName: 'পেঁপে', defaultUnit: 'piece', aliases: ['pepe', 'papaya'] },
       ]
     },
     {
@@ -51,7 +80,6 @@ async function main() {
         { name: 'Orange', banglaName: 'কমলা', defaultUnit: 'kg', aliases: ['komola', 'orange', 'malta'] },
         { name: 'Mango', banglaName: 'আম', defaultUnit: 'kg', aliases: ['aam', 'mango'] },
         { name: 'Guava', banglaName: 'পেয়ারা', defaultUnit: 'kg', aliases: ['peyara', 'guava'] },
-        { name: 'Papaya', banglaName: 'পেঁপে', defaultUnit: 'piece', aliases: ['pepe', 'papaya'] },
       ]
     },
     {
@@ -64,6 +92,7 @@ async function main() {
         { name: 'Pangash', banglaName: 'পাঙ্গাস', defaultUnit: 'kg', aliases: ['pangash mach', 'pangas'] },
         { name: 'Tilapia', banglaName: 'তেলাপিয়া', defaultUnit: 'kg', aliases: ['telapia', 'tilapia'] },
         { name: 'Shrimp', banglaName: 'চিংড়ি', defaultUnit: 'kg', aliases: ['chingri', 'shrimp', 'prawn'] },
+        { name: 'Dried Fish', banglaName: 'শুটকি', defaultUnit: 'kg', aliases: ['shutki', 'dry fish', 'shutki mach'] },
       ]
     },
     {
@@ -93,15 +122,18 @@ async function main() {
         { name: 'Shampoo', banglaName: 'শ্যাম্পু', defaultUnit: 'bottle', aliases: ['shampoo', 'sampoo'] },
         { name: 'Toothpaste', banglaName: 'টুথপেস্ট', defaultUnit: 'piece', aliases: ['toothpaste', 'colgate'] },
         { name: 'Tissue', banglaName: 'টিস্যু', defaultUnit: 'packet', aliases: ['tissue', 'fay tissue'] },
+        { name: 'Handwash', banglaName: 'হ্যান্ডওয়াশ', defaultUnit: 'bottle', aliases: ['handwash', 'hand wash'] },
       ]
     },
     {
       name: 'Household',
       banglaName: 'গৃহস্থালি',
       products: [
-        { name: 'Detergent', banglaName: 'ডিটারজেন্ট', defaultUnit: 'kg', aliases: ['detergent', 'surf excel', 'rin'] },
-        { name: 'Dishwashing Liquid', banglaName: 'ডিশওয়াশিং লিকুইড', defaultUnit: 'bottle', aliases: ['vim liquid', 'dishwash'] },
-        { name: 'Cleaner', banglaName: 'ক্লিনার', defaultUnit: 'bottle', aliases: ['harpic', 'cleaner'] },
+        { name: 'Detergent', banglaName: 'রিন / ডিটারজেন্ট', defaultUnit: 'kg', aliases: ['detergent', 'surf excel', 'rin'] },
+        { name: 'Dishwashing Liquid', banglaName: 'লিকুইড', defaultUnit: 'bottle', aliases: ['vim liquid', 'dishwash', 'liquid'] },
+        { name: 'Toilet Cleaner', banglaName: 'হারপিক', defaultUnit: 'bottle', aliases: ['harpic', 'toilet cleaner', 'cleaner'] },
+        { name: 'Vim Bar', banglaName: 'ভীম', defaultUnit: 'piece', aliases: ['vim', 'bhim', 'vim bar'] },
+        { name: 'Vixol', banglaName: 'ভিক্সল', defaultUnit: 'bottle', aliases: ['vixol', 'bikkhol', 'floor cleaner'] },
       ]
     }
   ];

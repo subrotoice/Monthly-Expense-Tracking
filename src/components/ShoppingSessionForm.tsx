@@ -135,37 +135,73 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
     }
   }, [selectedProduct]);
 
-  // Calculate total price if quantity or unit price changes
-  useEffect(() => {
-    if (quantity !== '' && unitPrice !== '') {
-      setTotalPrice(Number((quantity * unitPrice).toFixed(2)));
-    } else {
+  // Handle quantity change
+  const handleQuantityChange = (val: number | '') => {
+    setQuantity(val);
+    if (val !== '' && Number(val) > 0) {
+      if (unitPrice !== '' && Number(unitPrice) >= 0) {
+        setTotalPrice(Number((Number(val) * Number(unitPrice)).toFixed(2)));
+      } else if (totalPrice !== '' && Number(totalPrice) > 0) {
+        setUnitPrice(Number((Number(totalPrice) / Number(val)).toFixed(2)));
+      }
+    }
+  };
+
+  // Handle unit price change
+  const handleUnitPriceChange = (val: number | '') => {
+    setUnitPrice(val);
+    if (val !== '' && Number(val) >= 0) {
+      const q = quantity !== '' && Number(quantity) > 0 ? Number(quantity) : 1;
+      if (quantity === '' || Number(quantity) <= 0) {
+        setQuantity(1);
+      }
+      setTotalPrice(Number((q * Number(val)).toFixed(2)));
+    } else if (val === '') {
       setTotalPrice('');
     }
-  }, [quantity, unitPrice]);
+  };
 
-  // Handle unit price change when total price is changed manually
+  // Handle total price change directly
   const handleTotalPriceChange = (val: number | '') => {
     setTotalPrice(val);
-    if (val !== '' && quantity !== '' && quantity > 0) {
-      setUnitPrice(Number((val / quantity).toFixed(2)));
+    if (val !== '' && Number(val) >= 0) {
+      const q = quantity !== '' && Number(quantity) > 0 ? Number(quantity) : 1;
+      if (quantity === '' || Number(quantity) <= 0) {
+        setQuantity(1);
+      }
+      setUnitPrice(Number((Number(val) / q).toFixed(2)));
+    } else if (val === '') {
+      setUnitPrice('');
     }
   };
 
   // Add/Update item in list
   const handleAddToList = () => {
     if (!selectedProduct) return;
-    if (quantity === '' || quantity <= 0) return;
-    if (unitPrice === '' || unitPrice < 0) return;
+
+    let effectiveQty = quantity !== '' ? Number(quantity) : 1;
+    let effectiveUnitPrice = unitPrice !== '' ? Number(unitPrice) : 0;
+    let effectiveTotalPrice = totalPrice !== '' ? Number(totalPrice) : 0;
+
+    if (effectiveTotalPrice > 0) {
+      if (effectiveQty <= 0) effectiveQty = 1;
+      if (effectiveUnitPrice <= 0) {
+        effectiveUnitPrice = Number((effectiveTotalPrice / effectiveQty).toFixed(2));
+      }
+    } else if (effectiveUnitPrice > 0 && effectiveQty > 0) {
+      effectiveTotalPrice = Number((effectiveQty * effectiveUnitPrice).toFixed(2));
+    }
+
+    if (effectiveQty <= 0 || effectiveTotalPrice <= 0) return;
 
     const newItem: Omit<LocalShoppingItem, 'synced' | 'deleted'> = {
       id: editingItemIndex !== null ? itemsList[editingItemIndex].id : crypto.randomUUID(),
       sessionId: sessionId || '',
       productId: selectedProduct.id,
-      quantity: Number(quantity),
+      quantity: effectiveQty,
       unit,
-      unitPrice: Number(unitPrice),
-      totalPrice: Number((quantity * unitPrice).toFixed(2)),
+      unitPrice: effectiveUnitPrice,
+      totalPrice: effectiveTotalPrice,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -634,7 +670,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                   <input
                     type="number"
                     value={quantity}
-                    onChange={(e) => setQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                    onChange={(e) => handleQuantityChange(e.target.value === '' ? '' : Number(e.target.value))}
                     placeholder="e.g. 5"
                     className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
                   />
@@ -661,7 +697,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 <input
                   type="number"
                   value={unitPrice}
-                  onChange={(e) => setUnitPrice(e.target.value === '' ? '' : Number(e.target.value))}
+                  onChange={(e) => handleUnitPriceChange(e.target.value === '' ? '' : Number(e.target.value))}
                   placeholder="e.g. 70"
                   className="w-full border border-gray-300 text-black bg-white placeholder-gray-400 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-600/10 focus:border-green-600 transition-all font-semibold shadow-2xs"
                 />
@@ -682,7 +718,11 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
 
               <button
                 onClick={handleAddToList}
-                disabled={quantity === '' || unitPrice === ''}
+                disabled={
+                  !selectedProduct ||
+                  ((totalPrice === '' || Number(totalPrice) <= 0) &&
+                   (quantity === '' || unitPrice === '' || Number(quantity) <= 0 || Number(unitPrice) < 0))
+                }
                 className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-2.5 text-sm font-semibold transition-colors mt-5 flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
