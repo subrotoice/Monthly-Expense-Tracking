@@ -239,10 +239,9 @@ export default function ProductsPage() {
                   >
                     <div className="space-y-0.5">
                       <span className="text-sm font-bold text-gray-800 block">
-                        {prod.name}{' '}
-                        {prod.banglaName && (
-                          <span className="text-gray-400 font-normal">({prod.banglaName})</span>
-                        )}
+                        {prod.banglaName ? (
+                          <>{prod.banglaName}{' '}<span className="text-gray-400 font-normal">({prod.name})</span></>
+                        ) : prod.name}
                       </span>
                       {prod.aliases && prod.aliases.length > 0 && (
                         <span className="text-3xs text-gray-400 block max-w-[280px] truncate">

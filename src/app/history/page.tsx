@@ -143,7 +143,7 @@ export default function HistoryPage() {
     const products = productIds.length > 0
       ? await localDb.products.where('id').anyOf(productIds).toArray()
       : [];
-    const productNameMap = new Map(products.map(p => [p.id, p.name]));
+    const productNameMap = new Map(products.map(p => [p.id, p.banglaName || p.name]));
 
     const sessionItemsMap = new Map<string, string[]>();
     for (const item of sessionItems) {

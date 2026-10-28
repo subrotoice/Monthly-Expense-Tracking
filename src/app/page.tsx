@@ -72,7 +72,7 @@ export default function Dashboard() {
 
     const products = await localDb.products.toArray();
     const prodToCatMap = new Map(products.map(p => [p.id, p.categoryId]));
-    const prodNameMap = new Map(products.map(p => [p.id, p.name]));
+    const prodNameMap = new Map(products.map(p => [p.id, p.banglaName || p.name]));
 
     // Calculate category breakdown and session items for quick view
     const categoryTotals: Record<string, number> = {};

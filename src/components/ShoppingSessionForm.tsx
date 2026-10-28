@@ -553,8 +553,8 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                     className="w-full text-left px-4 py-2.5 text-xs hover:bg-gray-50 flex justify-between items-center border-b border-gray-50"
                   >
                     <div>
-                      <span className="font-semibold text-gray-800">{prod.name}</span>
-                      {prod.banglaName && <span className="text-gray-400 ml-1">({prod.banglaName})</span>}
+                      <span className="font-semibold text-gray-800">{prod.banglaName || prod.name}</span>
+                      {prod.banglaName && <span className="text-gray-400 ml-1">({prod.name})</span>}
                     </div>
                     <span className="text-3xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
                       {prod.categoryName}
@@ -757,10 +757,10 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                       className="text-sm font-bold text-gray-800 hover:text-green-600 transition-colors inline-flex items-center gap-1 group"
                     >
                       <span>
-                        {matchingProd?.name || 'Product'}
+                        {matchingProd?.banglaName || matchingProd?.name || 'Product'}
                         {matchingProd?.banglaName && (
                           <span className="text-gray-400 font-normal group-hover:text-green-500 ml-1">
-                            ({matchingProd.banglaName})
+                            ({matchingProd.name})
                           </span>
                         )}
                       </span>
