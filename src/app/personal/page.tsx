@@ -193,7 +193,7 @@ export default function PersonalExpensesPage() {
       setAmount('');
       setNotes('');
       setShowNotesInput(false);
-      triggerSync();
+      await triggerSync();
     } catch (err) {
       console.error('Failed to add personal expense:', err);
       alert('Failed to save expense. Please try again.');
@@ -234,7 +234,7 @@ export default function PersonalExpensesPage() {
       });
 
       setEditingExpense(null);
-      triggerSync();
+      await triggerSync();
     } catch (err) {
       console.error('Failed to update expense:', err);
       alert('Failed to update expense.');
@@ -243,6 +243,7 @@ export default function PersonalExpensesPage() {
 
   // Delete Expense
   const handleDelete = async (exp: LocalPersonalExpense) => {
+    if (!exp?.id) return;
     if (!confirm(`Delete "${exp.title}" (৳${exp.amount})?`)) return;
 
     try {
@@ -251,7 +252,7 @@ export default function PersonalExpensesPage() {
         updatedAt: new Date(),
         synced: 0,
       });
-      triggerSync();
+      await triggerSync();
     } catch (err) {
       console.error('Failed to delete expense:', err);
       alert('Failed to delete expense.');

@@ -90,6 +90,7 @@ model PersonalExpense {
   amount    Float
   date      DateTime
   notes     String?
+  deleted   Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

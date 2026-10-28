@@ -17,6 +17,7 @@ export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error' | 'offline';
 
 export class SyncManager {
   private static isSyncing = false;
+  private static syncQueued = false;
 
   static getLastSyncTime(): string {
     if (typeof window === 'undefined') return '1970-01-01T00:00:00.000Z';
@@ -30,7 +31,10 @@ export class SyncManager {
   }
 
   static async performSync(onStatusChange?: (status: SyncStatus) => void): Promise<void> {
-    if (this.isSyncing) return;
+    if (this.isSyncing) {
+      this.syncQueued = true;
+      return;
+    }
     if (typeof window !== 'undefined' && !navigator.onLine) {
       onStatusChange?.('offline');
       return;
@@ -168,9 +172,25 @@ export class SyncManager {
         }
 
         // 4. Apply pulled changes from server (Last-Write-Wins based on updatedAt)
+        const locallyDeletedIds = new Set<string>([
+          ...dirtyCategories.filter(c => c.deleted === 1).map(c => c.id),
+          ...dirtyProducts.filter(p => p.deleted === 1).map(p => p.id),
+          ...dirtyProductAliases.filter(a => a.deleted === 1).map(a => a.id),
+          ...dirtyMarkets.filter(m => m.deleted === 1).map(m => m.id),
+          ...dirtySessions.filter(s => s.deleted === 1).map(s => s.id),
+          ...dirtyItems.filter(i => i.deleted === 1).map(i => i.id),
+          ...dirtyBudgets.filter(b => b.deleted === 1).map(b => b.id),
+          ...dirtyPersonalExpenses.filter(e => e.deleted === 1).map(e => e.id),
+        ]);
+
         // Helper to upsert pulled records
         const applyPull = async (table: any, items: any[]) => {
           for (const item of items) {
+            if (locallyDeletedIds.has(item.id) || item.deleted === 1) {
+              await table.delete(item.id);
+              continue;
+            }
+
             const existing = await table.get(item.id);
             // Convert date strings from JSON to Date objects
             const itemDates = {
@@ -183,15 +203,11 @@ export class SyncManager {
             }
 
             if (!existing || new Date(item.updatedAt) > new Date(existing.updatedAt)) {
-              if (item.deleted === 1) {
-                await table.delete(item.id);
-              } else {
-                await table.put({
-                  ...itemDates,
-                  synced: 1,
-                  deleted: 0,
-                });
-              }
+              await table.put({
+                ...itemDates,
+                synced: 1,
+                deleted: 0,
+              });
             }
           }
         };
@@ -216,6 +232,12 @@ export class SyncManager {
       onStatusChange?.('error');
     } finally {
       this.isSyncing = false;
+      if (this.syncQueued) {
+        this.syncQueued = false;
+        setTimeout(() => {
+          SyncManager.performSync(onStatusChange);
+        }, 50);
+      }
     }
   }
 }

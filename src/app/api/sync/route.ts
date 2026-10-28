@@ -117,18 +117,44 @@ export async function POST(request: Request) {
 
       // 8. Personal Expenses
       if (push.personalExpenses && push.personalExpenses.length > 0) {
-        const peDelegate = (tx as any).personalExpense || (prisma as any).personalExpense;
-        if (peDelegate) {
-          for (const exp of push.personalExpenses) {
-            if (exp.deleted === 1) {
-              await peDelegate.deleteMany({ where: { id: exp.id } });
-            } else {
-              await peDelegate.upsert({
-                where: { id: exp.id },
-                update: { title: exp.title, amount: exp.amount, date: new Date(exp.date), notes: exp.notes, updatedAt: new Date(exp.updatedAt) },
-                create: { id: exp.id, title: exp.title, amount: exp.amount, date: new Date(exp.date), notes: exp.notes, createdAt: new Date(exp.createdAt), updatedAt: new Date(exp.updatedAt) },
-              });
-            }
+        for (const exp of push.personalExpenses) {
+          if (!exp || !exp.id) continue;
+          const isDel = exp.deleted === 1 ? 1 : 0;
+          const expUpdatedAt = exp.updatedAt ? new Date(exp.updatedAt) : new Date();
+
+          if (isDel === 1) {
+            await tx.personalExpense.updateMany({
+              where: { id: exp.id },
+              data: {
+                deleted: 1,
+                updatedAt: expUpdatedAt,
+              },
+            });
+          } else {
+            const expDate = exp.date ? new Date(exp.date) : new Date();
+            const expCreatedAt = exp.createdAt ? new Date(exp.createdAt) : new Date();
+
+            await tx.personalExpense.upsert({
+              where: { id: exp.id },
+              update: {
+                title: exp.title ?? '',
+                amount: Number(exp.amount) || 0,
+                date: expDate,
+                notes: exp.notes ?? null,
+                deleted: 0,
+                updatedAt: expUpdatedAt,
+              },
+              create: {
+                id: exp.id,
+                title: exp.title ?? '',
+                amount: Number(exp.amount) || 0,
+                date: expDate,
+                notes: exp.notes ?? null,
+                deleted: 0,
+                createdAt: expCreatedAt,
+                updatedAt: expUpdatedAt,
+              },
+            });
           }
         }
       }
@@ -143,9 +169,11 @@ export async function POST(request: Request) {
     const pullShoppingSessions = await prisma.shoppingSession.findMany({ where: { updatedAt: { gt: sinceDate } } });
     const pullShoppingItems = await prisma.shoppingItem.findMany({ where: { updatedAt: { gt: sinceDate } } });
     const pullBudgets = await prisma.budget.findMany({ where: { updatedAt: { gt: sinceDate } } });
-    const pullPersonalExpenses = (prisma as any).personalExpense
-      ? await (prisma as any).personalExpense.findMany({ where: { updatedAt: { gt: sinceDate } } })
-      : [];
+    const pullPersonalExpenses = await prisma.personalExpense.findMany({
+      where: sinceDate.getTime() <= 0
+        ? { deleted: 0 }
+        : { updatedAt: { gt: sinceDate } },
+    });
 
     return NextResponse.json({
       success: true,
