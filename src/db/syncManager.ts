@@ -10,6 +10,7 @@ export interface SyncPayload {
   shoppingSessions: any[];
   shoppingItems: any[];
   budgets: any[];
+  personalExpenses?: any[];
 }
 
 export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error' | 'offline';
@@ -49,6 +50,7 @@ export class SyncManager {
       const dirtySessions = await localDb.shoppingSessions.where('synced').equals(0).toArray();
       const dirtyItems = await localDb.shoppingItems.where('synced').equals(0).toArray();
       const dirtyBudgets = await localDb.budgets.where('synced').equals(0).toArray();
+      const dirtyPersonalExpenses = await localDb.personalExpenses.where('synced').equals(0).toArray();
 
       const pushPayload: SyncPayload = {
         categories: dirtyCategories,
@@ -58,6 +60,7 @@ export class SyncManager {
         shoppingSessions: dirtySessions,
         shoppingItems: dirtyItems,
         budgets: dirtyBudgets,
+        personalExpenses: dirtyPersonalExpenses,
       };
 
       const lastSync = this.getLastSyncTime();
@@ -96,7 +99,8 @@ export class SyncManager {
         localDb.markets,
         localDb.shoppingSessions,
         localDb.shoppingItems,
-        localDb.budgets
+        localDb.budgets,
+        localDb.personalExpenses
       ], async () => {
         // Categories
         for (const cat of dirtyCategories) {
@@ -154,6 +158,14 @@ export class SyncManager {
             await localDb.budgets.update(budget.id, { synced: 1 });
           }
         }
+        // Personal Expenses
+        for (const exp of dirtyPersonalExpenses) {
+          if (exp.deleted === 1) {
+            await localDb.personalExpenses.delete(exp.id);
+          } else {
+            await localDb.personalExpenses.update(exp.id, { synced: 1 });
+          }
+        }
 
         // 4. Apply pulled changes from server (Last-Write-Wins based on updatedAt)
         // Helper to upsert pulled records
@@ -191,6 +203,9 @@ export class SyncManager {
         await applyPull(localDb.shoppingSessions, pullPayload.shoppingSessions);
         await applyPull(localDb.shoppingItems, pullPayload.shoppingItems);
         await applyPull(localDb.budgets, pullPayload.budgets);
+        if (pullPayload.personalExpenses) {
+          await applyPull(localDb.personalExpenses, pullPayload.personalExpenses);
+        }
       });
 
       this.setLastSyncTime(currentSyncTime);

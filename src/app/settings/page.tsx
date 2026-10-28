@@ -36,7 +36,7 @@ export default function SettingsPage() {
   const handleExportJSON = async () => {
     try {
       const exportData: Record<string, any[]> = {};
-      const tables = ['categories', 'products', 'productAliases', 'markets', 'shoppingSessions', 'shoppingItems', 'budgets'];
+      const tables = ['categories', 'products', 'productAliases', 'markets', 'shoppingSessions', 'shoppingItems', 'budgets', 'personalExpenses'];
 
       for (const tableName of tables) {
         const table = (localDb as any)[tableName];
@@ -118,7 +118,7 @@ export default function SettingsPage() {
     reader.onload = async (event) => {
       try {
         const data = JSON.parse(event.target?.result as string);
-        const tables = ['categories', 'products', 'productAliases', 'markets', 'shoppingSessions', 'shoppingItems', 'budgets'];
+        const tables = ['categories', 'products', 'productAliases', 'markets', 'shoppingSessions', 'shoppingItems', 'budgets', 'personalExpenses'];
 
         // Simple validation check
         const hasValidTable = tables.some(t => Array.isArray(data[t]));
@@ -137,7 +137,8 @@ export default function SettingsPage() {
           localDb.markets,
           localDb.shoppingSessions,
           localDb.shoppingItems,
-          localDb.budgets
+          localDb.budgets,
+          localDb.personalExpenses
         ], async () => {
           for (const tableName of tables) {
             const list = data[tableName];

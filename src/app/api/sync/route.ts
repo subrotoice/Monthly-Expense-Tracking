@@ -114,6 +114,24 @@ export async function POST(request: Request) {
           }
         }
       }
+
+      // 8. Personal Expenses
+      if (push.personalExpenses && push.personalExpenses.length > 0) {
+        const peDelegate = (tx as any).personalExpense || (prisma as any).personalExpense;
+        if (peDelegate) {
+          for (const exp of push.personalExpenses) {
+            if (exp.deleted === 1) {
+              await peDelegate.deleteMany({ where: { id: exp.id } });
+            } else {
+              await peDelegate.upsert({
+                where: { id: exp.id },
+                update: { title: exp.title, amount: exp.amount, date: new Date(exp.date), notes: exp.notes, updatedAt: new Date(exp.updatedAt) },
+                create: { id: exp.id, title: exp.title, amount: exp.amount, date: new Date(exp.date), notes: exp.notes, createdAt: new Date(exp.createdAt), updatedAt: new Date(exp.updatedAt) },
+              });
+            }
+          }
+        }
+      }
     });
 
     // Fetch changes to pull since last sync
@@ -125,6 +143,9 @@ export async function POST(request: Request) {
     const pullShoppingSessions = await prisma.shoppingSession.findMany({ where: { updatedAt: { gt: sinceDate } } });
     const pullShoppingItems = await prisma.shoppingItem.findMany({ where: { updatedAt: { gt: sinceDate } } });
     const pullBudgets = await prisma.budget.findMany({ where: { updatedAt: { gt: sinceDate } } });
+    const pullPersonalExpenses = (prisma as any).personalExpense
+      ? await (prisma as any).personalExpense.findMany({ where: { updatedAt: { gt: sinceDate } } })
+      : [];
 
     return NextResponse.json({
       success: true,
@@ -136,6 +157,7 @@ export async function POST(request: Request) {
         shoppingSessions: pullShoppingSessions,
         shoppingItems: pullShoppingItems,
         budgets: pullBudgets,
+        personalExpenses: pullPersonalExpenses,
       },
     });
   } catch (error: any) {

@@ -4,7 +4,7 @@ import React from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { localDb } from '@/db/localDb';
 import Link from 'next/link';
-import { ShoppingBag, TrendingUp, Calendar, ArrowRight, Store, AlertTriangle } from 'lucide-react';
+import { ShoppingBag, TrendingUp, Calendar, ArrowRight, Store, AlertTriangle, Wallet } from 'lucide-react';
 
 export default function Dashboard() {
   const data = useLiveQuery(async () => {
@@ -98,6 +98,16 @@ export default function Dashboard() {
       }
     });
 
+    // Calculate personal expenses for current month
+    const personalList = await localDb.personalExpenses.where('deleted').equals(0).toArray();
+    let monthPersonalExpense = 0;
+    personalList.forEach((p) => {
+      const time = new Date(p.date).getTime();
+      if (time >= monthMs && time < startOfNextMonth.getTime()) {
+        monthPersonalExpense += p.amount;
+      }
+    });
+
     const categoryBreakdown = Object.entries(categoryTotals).map(([catId, total]) => ({
       name: catMap.get(catId) || 'Other',
       banglaName: catBanglaMap.get(catId) || 'অন্যান্য',
@@ -114,6 +124,7 @@ export default function Dashboard() {
       marketMap,
       sessionItemsMap,
       categoryBreakdown,
+      monthPersonalExpense,
     };
   });
 
@@ -126,7 +137,7 @@ export default function Dashboard() {
     );
   }
 
-  const { todayExpense, weekExpense, monthExpense, budget, recentSessions, marketMap, sessionItemsMap, categoryBreakdown } = data;
+  const { todayExpense, weekExpense, monthExpense, budget, recentSessions, marketMap, sessionItemsMap, categoryBreakdown, monthPersonalExpense } = data;
   const remainingBudget = budget - monthExpense;
   const budgetPercentage = budget > 0 ? Math.min(Math.round((monthExpense / budget) * 100), 100) : 0;
   const isOverBudget = remainingBudget < 0;
@@ -189,6 +200,28 @@ export default function Dashboard() {
           <span className="text-base font-extrabold text-gray-900 block mt-1">৳{monthExpense.toLocaleString()}</span>
         </div>
       </div>
+
+      {/* Personal Expenses Quick Link Card */}
+      <Link
+        href="/personal"
+        className="flex items-center justify-between bg-white rounded-xl border border-gray-100 p-3.5 shadow-2xs hover:bg-gray-50/50 transition-colors"
+      >
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-600 shrink-0">
+            <Wallet className="w-4.5 h-4.5" />
+          </div>
+          <div>
+            <span className="text-xs font-bold text-gray-900 block">Personal Expenses</span>
+            <span className="text-3xs text-gray-400 font-medium block">
+              {currentMonthName}: ৳{monthPersonalExpense.toLocaleString()}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-1 text-xs font-semibold text-green-700">
+          <span>Manage</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </div>
+      </Link>
 
       {/* Recent Shopping Sessions */}
       <div className="space-y-3">
