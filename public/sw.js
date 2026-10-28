@@ -1,4 +1,4 @@
-const CACHE_NAME = 'bazar-hisab-cache-v1';
+const CACHE_NAME = 'bazar-hisab-cache-v2';
 const ASSETS = [
   '/',
   '/manifest.json',
@@ -30,8 +30,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Only handle GET requests and skip API calls
-  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+  // Only handle GET requests and skip API calls and _next chunks
+  if (
+    event.request.method !== 'GET' ||
+    event.request.url.includes('/api/') ||
+    event.request.url.includes('/_next/')
+  ) {
     return;
   }
 

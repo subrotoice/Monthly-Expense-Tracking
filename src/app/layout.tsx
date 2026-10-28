@@ -45,13 +45,24 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').then(function(reg) {
-                    console.log('SW registered successfully');
-                  }).catch(function(err) {
-                    console.log('SW registration failed', err);
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (var r of registrations) { r.unregister(); }
                   });
-                });
+                  if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                      for (var name of names) { caches.delete(name); }
+                    });
+                  }
+                } else {
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+                      console.log('SW registered successfully');
+                    }).catch(function(err) {
+                      console.log('SW registration failed', err);
+                    });
+                  });
+                }
               }
             `
           }}

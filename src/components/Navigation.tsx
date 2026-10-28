@@ -3,7 +3,25 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, History, Plus, Wallet, Settings } from 'lucide-react';
+import { LayoutDashboard, History, Plus, Settings } from 'lucide-react';
+
+function WalletIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+      <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+    </svg>
+  );
+}
 
 export default function Navigation() {
   const pathname = usePathname();
@@ -12,7 +30,7 @@ export default function Navigation() {
     { label: 'Dashboard', href: '/', icon: LayoutDashboard },
     { label: 'History', href: '/history', icon: History },
     { label: 'Add', href: '/market/new', icon: Plus, isAction: true },
-    { label: 'Personal', href: '/personal', icon: Wallet },
+    { label: 'Personal', href: '/personal', icon: WalletIcon },
     { label: 'More', href: '/settings', icon: Settings },
   ];
 
