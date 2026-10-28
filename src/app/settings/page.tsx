@@ -18,7 +18,8 @@ import {
   Check,
   TrendingUp,
   FileSpreadsheet,
-  ChevronRight
+  ChevronRight,
+  Apple,
 } from 'lucide-react';
 
 export default function SettingsPage() {
@@ -204,6 +205,14 @@ export default function SettingsPage() {
 
       {/* Navigation Menu Links */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-2xs divide-y divide-gray-100">
+        <Link href="/products" className="flex items-center justify-between px-4 py-4 hover:bg-gray-50/50 transition-colors">
+          <div className="flex items-center space-x-3 text-gray-700">
+            <Apple className="w-5 h-5 text-gray-400" />
+            <span className="text-sm font-bold">Products Master Catalog</span>
+          </div>
+          <ChevronRight className="w-4 h-4 text-gray-300" />
+        </Link>
+
         <Link href="/budget" className="flex items-center justify-between px-4 py-4 hover:bg-gray-50/50 transition-colors">
           <div className="flex items-center space-x-3 text-gray-700">
             <Calendar className="w-5 h-5 text-gray-400" />
