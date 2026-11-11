@@ -104,96 +104,86 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Autofill unit and price based on selected product
+  // Autofill unit and fetch previous price based on selected product
   useEffect(() => {
     if (selectedProduct) {
-      setUnit(selectedProduct.defaultUnit || 'kg');
+      if (editingItemIndex === null) {
+        setUnit(selectedProduct.defaultUnit || 'kg');
+        setQuantity('');
+        setTotalPrice('');
+      }
 
-      // Query previous recorded price for this product
+      // Query previous recorded price for this product (only valid unitPrice > 0)
       const getPreviousPrice = async () => {
         const pastItems = await localDb.shoppingItems
           .where('productId')
           .equals(selectedProduct.id)
           .toArray();
 
-        // Filter active and sort by date/createdAt desc
+        // Filter active items with a recorded unit price and sort by date/createdAt desc
         const sortedItems = pastItems
-          .filter(i => i.deleted === 0)
+          .filter(i => i.deleted === 0 && i.unitPrice > 0)
           .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
         if (sortedItems.length > 0) {
           const lastItem = sortedItems[0];
           setPrevPrice({ price: lastItem.unitPrice, unit: lastItem.unit });
-          setUnitPrice(lastItem.unitPrice);
+          if (editingItemIndex === null) {
+            setUnitPrice(lastItem.unitPrice);
+          }
         } else {
           setPrevPrice(null);
-          setUnitPrice('');
+          if (editingItemIndex === null) {
+            setUnitPrice('');
+          }
         }
       };
       getPreviousPrice();
     } else {
       setPrevPrice(null);
+      if (editingItemIndex === null) {
+        setQuantity('');
+        setUnitPrice('');
+        setTotalPrice('');
+      }
     }
-  }, [selectedProduct]);
+  }, [selectedProduct, editingItemIndex]);
 
-  // Handle quantity change
+  // Handle quantity change - only calculate total price when both quantity and unitPrice are provided
   const handleQuantityChange = (val: number | '') => {
     setQuantity(val);
-    if (val !== '' && Number(val) > 0) {
-      if (unitPrice !== '' && Number(unitPrice) >= 0) {
-        setTotalPrice(Number((Number(val) * Number(unitPrice)).toFixed(2)));
-      } else if (totalPrice !== '' && Number(totalPrice) > 0) {
-        setUnitPrice(Number((Number(totalPrice) / Number(val)).toFixed(2)));
-      }
+    if (val !== '' && Number(val) > 0 && unitPrice !== '' && Number(unitPrice) > 0) {
+      setTotalPrice(Number((Number(val) * Number(unitPrice)).toFixed(2)));
     }
   };
 
-  // Handle unit price change
+  // Handle unit price change - only calculate total price when both quantity and unitPrice are provided
   const handleUnitPriceChange = (val: number | '') => {
     setUnitPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = quantity !== '' && Number(quantity) > 0 ? Number(quantity) : 1;
-      if (quantity === '' || Number(quantity) <= 0) {
-        setQuantity(1);
-      }
-      setTotalPrice(Number((q * Number(val)).toFixed(2)));
-    } else if (val === '') {
-      setTotalPrice('');
+    if (val !== '' && Number(val) > 0 && quantity !== '' && Number(quantity) > 0) {
+      setTotalPrice(Number((Number(quantity) * Number(val)).toFixed(2)));
     }
   };
 
-  // Handle total price change directly
+  // Handle total price change directly - does NOT affect Unit Price or Quantity field values
   const handleTotalPriceChange = (val: number | '') => {
     setTotalPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = quantity !== '' && Number(quantity) > 0 ? Number(quantity) : 1;
-      if (quantity === '' || Number(quantity) <= 0) {
-        setQuantity(1);
-      }
-      setUnitPrice(Number((Number(val) / q).toFixed(2)));
-    } else if (val === '') {
-      setUnitPrice('');
-    }
   };
 
   // Add/Update item in list
   const handleAddToList = () => {
     if (!selectedProduct) return;
 
-    let effectiveQty = quantity !== '' ? Number(quantity) : 1;
-    let effectiveUnitPrice = unitPrice !== '' ? Number(unitPrice) : 0;
-    let effectiveTotalPrice = totalPrice !== '' ? Number(totalPrice) : 0;
+    const effectiveQty = quantity !== '' && Number(quantity) > 0 ? Number(quantity) : 0;
+    const effectiveUnitPrice = unitPrice !== '' && Number(unitPrice) > 0 ? Number(unitPrice) : 0;
+    let effectiveTotalPrice = totalPrice !== '' && Number(totalPrice) > 0 ? Number(totalPrice) : 0;
 
-    if (effectiveTotalPrice > 0) {
-      if (effectiveQty <= 0) effectiveQty = 1;
-      if (effectiveUnitPrice <= 0) {
-        effectiveUnitPrice = Number((effectiveTotalPrice / effectiveQty).toFixed(2));
-      }
-    } else if (effectiveUnitPrice > 0 && effectiveQty > 0) {
+    // If total price was not entered directly but both qty and unit price are given, calculate it
+    if (effectiveTotalPrice <= 0 && effectiveQty > 0 && effectiveUnitPrice > 0) {
       effectiveTotalPrice = Number((effectiveQty * effectiveUnitPrice).toFixed(2));
     }
 
-    if (effectiveQty <= 0 || effectiveTotalPrice <= 0) return;
+    if (effectiveTotalPrice <= 0) return;
 
     const newItem: Omit<LocalShoppingItem, 'synced' | 'deleted'> = {
       id: editingItemIndex !== null ? itemsList[editingItemIndex].id : crypto.randomUUID(),
@@ -203,7 +193,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
       unit,
       unitPrice: effectiveUnitPrice,
       totalPrice: effectiveTotalPrice,
-      createdAt: new Date(),
+      createdAt: editingItemIndex !== null ? itemsList[editingItemIndex].createdAt : new Date(),
       updatedAt: new Date(),
     };
 
@@ -232,16 +222,16 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
     const product = await localDb.products.get(item.productId);
     if (product) {
       const aliases = await localDb.productAliases.where('productId').equals(product.id).toArray();
+      setEditingItemIndex(index);
       setSelectedProduct({
         ...product,
         aliases: aliases.map(a => a.alias),
       });
       setSearchQuery(product.name);
-      setQuantity(item.quantity);
+      setQuantity(item.quantity > 0 ? item.quantity : '');
       setUnit(item.unit);
-      setUnitPrice(item.unitPrice);
-      setTotalPrice(item.totalPrice);
-      setEditingItemIndex(index);
+      setUnitPrice(item.unitPrice > 0 ? item.unitPrice : '');
+      setTotalPrice(item.totalPrice > 0 ? item.totalPrice : '');
     }
   };
 
@@ -722,7 +712,7 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                 disabled={
                   !selectedProduct ||
                   ((totalPrice === '' || Number(totalPrice) <= 0) &&
-                   (quantity === '' || unitPrice === '' || Number(quantity) <= 0 || Number(unitPrice) < 0))
+                   (quantity === '' || unitPrice === '' || Number(quantity) <= 0 || Number(unitPrice) <= 0))
                 }
                 className="w-full bg-green-600 hover:bg-green-700 text-white rounded-lg py-2.5 text-sm font-semibold transition-colors mt-5 flex items-center justify-center space-x-1.5 shadow-sm disabled:opacity-50"
               >
@@ -767,7 +757,13 @@ export default function ShoppingSessionForm({ sessionId }: ShoppingSessionFormPr
                       <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-green-600 transition-colors" />
                     </Link>
                     <span className="text-3xs text-gray-500 block">
-                      {item.quantity} {item.unit} × ৳{item.unitPrice}
+                      {item.unitPrice > 0 && item.quantity > 0
+                        ? `${item.quantity} ${item.unit} × ৳${item.unitPrice}`
+                        : item.unitPrice > 0
+                        ? `৳${item.unitPrice} / ${item.unit}`
+                        : item.quantity > 0
+                        ? `${item.quantity} ${item.unit}`
+                        : 'Direct Total'}
                     </span>
                   </div>
 

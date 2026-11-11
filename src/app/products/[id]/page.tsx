@@ -96,7 +96,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
       .equals(productId)
       .toArray();
 
-    const activeItems = items.filter(i => i.deleted === 0);
+    const activeItems = items.filter(i => i.deleted === 0 && i.unitPrice > 0);
 
     // Fetch sessions associated with these items
     const sessions = await localDb.shoppingSessions.where('deleted').equals(0).toArray();
@@ -339,39 +339,20 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
 
   const handleEditRecordQtyChange = (val: number | '') => {
     setEditRecordQty(val);
-    if (val !== '' && Number(val) > 0) {
-      if (editRecordUnitPrice !== '' && Number(editRecordUnitPrice) >= 0) {
-        setEditRecordTotalPrice(Number((Number(val) * Number(editRecordUnitPrice)).toFixed(2)));
-      } else if (editRecordTotalPrice !== '' && Number(editRecordTotalPrice) > 0) {
-        setEditRecordUnitPrice(Number((Number(editRecordTotalPrice) / Number(val)).toFixed(2)));
-      }
+    if (val !== '' && Number(val) > 0 && editRecordUnitPrice !== '' && Number(editRecordUnitPrice) > 0) {
+      setEditRecordTotalPrice(Number((Number(val) * Number(editRecordUnitPrice)).toFixed(2)));
     }
   };
 
   const handleEditRecordUnitPriceChange = (val: number | '') => {
     setEditRecordUnitPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = editRecordQty !== '' && Number(editRecordQty) > 0 ? Number(editRecordQty) : 1;
-      if (editRecordQty === '' || Number(editRecordQty) <= 0) {
-        setEditRecordQty(1);
-      }
-      setEditRecordTotalPrice(Number((q * Number(val)).toFixed(2)));
-    } else if (val === '') {
-      setEditRecordTotalPrice('');
+    if (val !== '' && Number(val) > 0 && editRecordQty !== '' && Number(editRecordQty) > 0) {
+      setEditRecordTotalPrice(Number((Number(editRecordQty) * Number(val)).toFixed(2)));
     }
   };
 
   const handleEditRecordTotalPriceChange = (val: number | '') => {
     setEditRecordTotalPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = editRecordQty !== '' && Number(editRecordQty) > 0 ? Number(editRecordQty) : 1;
-      if (editRecordQty === '' || Number(editRecordQty) <= 0) {
-        setEditRecordQty(1);
-      }
-      setEditRecordUnitPrice(Number((Number(val) / q).toFixed(2)));
-    } else if (val === '') {
-      setEditRecordUnitPrice('');
-    }
   };
 
   const handleCreateMarketInEditRecord = async () => {
@@ -500,39 +481,20 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
   // --- Add New Record Directly ---
   const handleNewRecordQtyChange = (val: number | '') => {
     setNewRecordQty(val);
-    if (val !== '' && Number(val) > 0) {
-      if (newRecordUnitPrice !== '' && Number(newRecordUnitPrice) >= 0) {
-        setNewRecordTotalPrice(Number((Number(val) * Number(newRecordUnitPrice)).toFixed(2)));
-      } else if (newRecordTotalPrice !== '' && Number(newRecordTotalPrice) > 0) {
-        setNewRecordUnitPrice(Number((Number(newRecordTotalPrice) / Number(val)).toFixed(2)));
-      }
+    if (val !== '' && Number(val) > 0 && newRecordUnitPrice !== '' && Number(newRecordUnitPrice) > 0) {
+      setNewRecordTotalPrice(Number((Number(val) * Number(newRecordUnitPrice)).toFixed(2)));
     }
   };
 
   const handleNewRecordUnitPriceChange = (val: number | '') => {
     setNewRecordUnitPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = newRecordQty !== '' && Number(newRecordQty) > 0 ? Number(newRecordQty) : 1;
-      if (newRecordQty === '' || Number(newRecordQty) <= 0) {
-        setNewRecordQty(1);
-      }
-      setNewRecordTotalPrice(Number((q * Number(val)).toFixed(2)));
-    } else if (val === '') {
-      setNewRecordTotalPrice('');
+    if (val !== '' && Number(val) > 0 && newRecordQty !== '' && Number(newRecordQty) > 0) {
+      setNewRecordTotalPrice(Number((Number(newRecordQty) * Number(val)).toFixed(2)));
     }
   };
 
   const handleNewRecordTotalPriceChange = (val: number | '') => {
     setNewRecordTotalPrice(val);
-    if (val !== '' && Number(val) >= 0) {
-      const q = newRecordQty !== '' && Number(newRecordQty) > 0 ? Number(newRecordQty) : 1;
-      if (newRecordQty === '' || Number(newRecordQty) <= 0) {
-        setNewRecordQty(1);
-      }
-      setNewRecordUnitPrice(Number((Number(val) / q).toFixed(2)));
-    } else if (val === '') {
-      setNewRecordUnitPrice('');
-    }
   };
 
   const handleCreateMarketInNewRecord = async () => {
